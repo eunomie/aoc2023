@@ -1,5 +1,7 @@
 package utils
 
+import "slices"
+
 func Must[T any](v T, err error) T {
 	if err != nil {
 		panic(err)
@@ -7,11 +9,10 @@ func Must[T any](v T, err error) T {
 	return v
 }
 
-func OrIndex(i, j int) int {
-	if i < 0 {
-		return j
-	}
-	return i
+func ReserveString(str string) string {
+	bytes := []byte(str)
+	slices.Reverse(bytes)
+	return string(bytes)
 }
 
 func Panic(err error) {

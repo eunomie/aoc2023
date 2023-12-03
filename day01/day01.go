@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"regexp"
 	"strconv"
 	"strings"
@@ -19,23 +20,61 @@ func main() {
 
 func Do(input string) (int, error) {
 	res := 0
+
 	for _, line := range strings.Split(input, "\n") {
-		exp := regexp.MustCompile(`^[^\d]*(?P<FirstDigit>\d).*(?P<LastDigit>\d)[^\d]*$`)
-		match := exp.FindStringSubmatch(line)
-		if match == nil {
-			exp = regexp.MustCompile(`^[^\d]*(?P<FirstDigit>\d).*$`)
-			match = exp.FindStringSubmatch(line)
-		}
-		firstDigitIndex := exp.SubexpIndex("FirstDigit")
-		lastDigitIndex := utils.OrIndex(exp.SubexpIndex("LastDigit"), firstDigitIndex)
-		firstDigit := match[firstDigitIndex]
-		lastDigit := match[lastDigitIndex]
-		number := fmt.Sprintf("%v%v", firstDigit, lastDigit)
-		n := utils.Must(strconv.Atoi(number))
+		firstDigit := findDigit(line, false)
+		lastDigit := findDigit(line, true)
+		number := fmt.Sprintf("%d%d", atoi(firstDigit), atoi(lastDigit))
+		n := atoi(number)
 		res += n
+		log.Println(line, firstDigit, lastDigit, number, n, res)
 	}
 
 	return res, nil
+}
+
+var (
+	expr         = `(\d|one|two|three|four|five|six|seven|eight|nine)`
+	reversedExpr = `(\d|eno|owt|eerht|ruof|evif|xis|neves|thgie|enin)`
+)
+
+func findDigit(line string, reverse bool) string {
+	e := expr
+	if reverse {
+		e = reversedExpr
+		line = utils.ReserveString(line)
+	}
+	exp := regexp.MustCompile(e)
+	match := exp.FindString(line)
+	if reverse {
+		match = utils.ReserveString(match)
+	}
+	return match
+}
+
+func atoi(str string) int {
+	switch str {
+	case "one":
+		return 1
+	case "two":
+		return 2
+	case "three":
+		return 3
+	case "four":
+		return 4
+	case "five":
+		return 5
+	case "six":
+		return 6
+	case "seven":
+		return 7
+	case "eight":
+		return 8
+	case "nine":
+		return 9
+	default:
+		return utils.Must(strconv.Atoi(str))
+	}
 }
 
 var (
