@@ -16,30 +16,25 @@ func main() {
 }
 
 func Do(input string) int {
-	availableCubes := map[string]int{
-		// 12 red cubes, 13 green cubes, and 14 blue cubes
-		"red":   12,
-		"green": 13,
-		"blue":  14,
-	}
-
 	res := 0
 
-LINES:
 	for _, line := range utils.Lines(input) {
 		expr := regexp.MustCompile(`^Game (?P<GameNumber>\d+): (?P<Games>.+)$`)
 		match := expr.FindStringSubmatch(line)
 		games := match[expr.SubexpIndex("Games")]
+		minCubes := map[string]int{
+			"red":   0,
+			"green": 0,
+			"blue":  0,
+		}
 		for _, set := range strings.Split(games, "; ") {
 			for _, cubes := range strings.Split(set, ", ") {
 				details := strings.Split(cubes, " ")
 				nbCubes := utils.Must(strconv.Atoi(details[0]))
-				if nbCubes > availableCubes[details[1]] {
-					continue LINES
-				}
+				minCubes[details[1]] = max(nbCubes, minCubes[details[1]])
 			}
 		}
-		res += utils.Must(strconv.Atoi(match[expr.SubexpIndex("GameNumber")]))
+		res += minCubes["red"] * minCubes["green"] * minCubes["blue"]
 	}
 
 	return res
