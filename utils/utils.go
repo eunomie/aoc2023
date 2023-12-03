@@ -1,6 +1,9 @@
 package utils
 
-import "slices"
+import (
+	"slices"
+	"strings"
+)
 
 func Must[T any](v T, err error) T {
 	if err != nil {
@@ -19,4 +22,8 @@ func Panic(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func Lines(str string) []string {
+	return strings.Split(str, "\n")
 }
